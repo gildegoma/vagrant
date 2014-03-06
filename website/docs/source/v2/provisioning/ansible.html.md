@@ -177,8 +177,8 @@ all of which get passed to the `ansible-playbook` command that ships with Ansibl
 * `ansible.sudo` can be set to `true` to cause Ansible to perform commands using sudo.
 * `ansible.sudo_user` can be set to a string containing a username on the guest who should be used
 by the sudo command.
-* `ansible.ask_sudo_pass` can be set to `true` to require Ansible to prompt for a sudo password.
-* `ansible.ask_vault_pass` can be set to `true` to require Ansible to prompt for a vault password.
+* `ansible.ask_sudo_pass` can be set to `true` to require Ansible to prompt for a sudo password. TODO: not supported in :guest mode
+* `ansible.ask_vault_pass` can be set to `true` to require Ansible to prompt for a vault password. TODO: not supported in :guest mode
 * `ansible.vault_password_file` can be set to a string containing the path of a file containing the password used by Ansible Vault.
 * `ansible.limit` can be set to a string or an array of machines or groups from the inventory file to further control which hosts are affected. Note that:
   * As of Vagrant 1.5, the machine name (taken from Vagrantfile) is set as **default limit** to ensure that `vagrant provision` steps only affect the expected machine. Setting `ansible.limit` will override this default.
@@ -194,8 +194,8 @@ by the sudo command.
 * `ansible.raw_arguments` can be set to an array of strings corresponding to a list of `ansible-playbook` arguments (e.g. `['--check', '-M /my/modules']`). It is an *unsafe wildcard* that can be used to apply Ansible options that are not (yet) supported by this Vagrant provisioner. Following precedence rules apply:
   * Any supported options (described above) will override conflicting `raw_arguments` value (e.g. `--tags` or `--start-at-task`)
   * Vagrant default user authentication can be overridden via `raw_arguments` (with custom values for `--user` and `--private-key`)
-* `ansible.raw_ssh_args` can be set to an array of strings corresponding to a list of OpenSSH client parameters (e.g. `['-o ControlMaster=no']`). It is an *unsafe wildcard* that can be used to pass additional SSH settings to Ansible via `ANSIBLE_SSH_ARGS` environment variable.
-* `ansible.host_key_checking` can be set to `true` which will enable host key checking. As Vagrant 1.5, the default value is `false`, to avoid connection problems when creating new virtual machines.
+* `ansible.raw_ssh_args` can be set to an array of strings corresponding to a list of OpenSSH client parameters (e.g. `['-o ControlMaster=no']`). It is an *unsafe wildcard* that can be used to pass additional SSH settings to Ansible via `ANSIBLE_SSH_ARGS` environment variable. TODO: not supported in :guest mode
+* `ansible.host_key_checking` can be set to `true` which will enable host key checking. As Vagrant 1.5, the default value is `false`, to avoid connection problems when creating new virtual machines. TODO: not supported in :guest mode
 
 ## Tips and Tricks
 

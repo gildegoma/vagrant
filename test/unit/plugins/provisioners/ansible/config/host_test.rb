@@ -1,9 +1,9 @@
-require_relative "../../../base"
-require_relative "../support/shared/config"
+require_relative "../../../../base"
+require_relative "../../support/shared/config"
 
-require Vagrant.source_root.join("plugins/provisioners/ansible/config")
+require Vagrant.source_root.join("plugins/provisioners/ansible/config/host")
 
-describe VagrantPlugins::Ansible::Config do
+describe VagrantPlugins::Ansible::Config::Host do
   include_context "unit"
 
   subject { described_class.new }
@@ -17,21 +17,8 @@ describe VagrantPlugins::Ansible::Config do
     config_options.map! { |i| i.to_s.sub('=', '') }
     supported_options = %w( ask_sudo_pass
                             ask_vault_pass
-                            extra_vars
-                            groups
                             host_key_checking
-                            inventory_path
-                            limit
-                            playbook
-                            raw_arguments
-                            raw_ssh_args
-                            skip_tags
-                            start_at_task
-                            sudo
-                            sudo_user
-                            tags
-                            vault_password_file
-                            verbose )
+                            raw_ssh_args )
 
     expect(config_options.sort).to eql(supported_options)
   end
@@ -39,10 +26,9 @@ describe VagrantPlugins::Ansible::Config do
   it "assigns default values to unset options" do
     subject.finalize!
 
+    # Common options
     expect(subject.playbook).to be_nil
     expect(subject.extra_vars).to be_nil
-    expect(subject.ask_sudo_pass).to be_false
-    expect(subject.ask_vault_pass).to be_false
     expect(subject.vault_password_file).to be_nil
     expect(subject.limit).to be_nil
     expect(subject.sudo).to be_false
@@ -52,8 +38,12 @@ describe VagrantPlugins::Ansible::Config do
     expect(subject.skip_tags).to be_nil
     expect(subject.start_at_task).to be_nil
     expect(subject.groups).to eq({})
-    expect(subject.host_key_checking).to be_false
     expect(subject.raw_arguments).to be_nil
+
+    # Host-specific options
+    expect(subject.ask_sudo_pass).to be_false
+    expect(subject.ask_vault_pass).to be_false
+    expect(subject.host_key_checking).to be_false
     expect(subject.raw_ssh_args).to be_nil
   end
 
@@ -65,9 +55,6 @@ describe VagrantPlugins::Ansible::Config do
   end
   describe "ask_vault_pass option" do
     it_behaves_like "any VagrantConfigProvisioner strict boolean attribute", :ask_sudo_pass, false
-  end
-  describe "sudo option" do
-    it_behaves_like "any VagrantConfigProvisioner strict boolean attribute", :sudo, false
   end
 
   describe "#validate" do

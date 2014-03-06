@@ -1,7 +1,7 @@
-require_relative "../../../base"
+require_relative "../../../../base"
 
-require Vagrant.source_root.join("plugins/provisioners/ansible/config")
-require Vagrant.source_root.join("plugins/provisioners/ansible/provisioner")
+require Vagrant.source_root.join("plugins/provisioners/ansible/config/host")
+require Vagrant.source_root.join("plugins/provisioners/ansible/provisioner/host")
 
 #
 # Helper Functions
@@ -15,7 +15,7 @@ def find_last_argument_after(ref_index, ansible_playbook_args, arg_pattern)
   return false
 end
 
-describe VagrantPlugins::Ansible::Provisioner do
+describe VagrantPlugins::Ansible::Provisioner::Host do
   include_context "unit"
 
   subject { described_class.new(machine, config) }
@@ -37,7 +37,7 @@ VF
   end
 
   let(:machine) { iso_env.machine(iso_env.machine_names[0], :dummy) }
-  let(:config)  { VagrantPlugins::Ansible::Config.new }
+  let(:config)  { VagrantPlugins::Ansible::Config::Host.new }
   let(:ssh_info) {{
     private_key_path: ['/path/to/my/key'],
     username: 'testuser',
@@ -46,7 +46,7 @@ VF
   }}
 
   let(:existing_file) { File.expand_path(__FILE__) }
-  let(:generated_inventory_dir) { File.join(machine.env.local_data_path, %w(provisioners ansible inventory)) }
+  let(:generated_inventory_dir) { File.join('.vagrant', %w(provisioners ansible inventory)) }
   let(:generated_inventory_file) { File.join(generated_inventory_dir, 'vagrant_ansible_inventory') }
 
   before do
@@ -363,9 +363,8 @@ VF
 
       it "does not generate the inventory and uses given inventory path instead" do
         expect(Vagrant::Util::Subprocess).to receive(:execute).with { |*args|
-          expect(args).to include("--inventory-file=#{existing_file}")
           expect(args).not_to include("--inventory-file=#{generated_inventory_file}")
-          expect(File.exists?(generated_inventory_file)).to be_false
+          expect(args).to include("--inventory-file=#{existing_file}")
         }
       end
     end
@@ -475,7 +474,7 @@ VF
 
       it "shows the ansible-playbook command" do
         expect(machine.env.ui).to receive(:detail).with { |full_command|
-          expect(full_command).to eq("ANSIBLE_FORCE_COLOR=true ANSIBLE_HOST_KEY_CHECKING=false PYTHONUNBUFFERED=1 ansible-playbook --private-key=/path/to/my/key --user=testuser --limit='machine1' --inventory-file=#{generated_inventory_dir} -v playbook.yml")
+          expect(full_command).to eq("PYTHONUNBUFFERED=1 ANSIBLE_FORCE_COLOR=true ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook --private-key=/path/to/my/key --user=testuser --limit='machine1' --inventory-file=#{generated_inventory_dir} -v playbook.yml")
         }
       end
     end
@@ -522,7 +521,7 @@ VF
                                           "limit"               => "--limit=machine*:&vagrant:!that_one",
                                           "start_at_task"       => "--start-at-task=an awesome task",
                                         })
-    
+
       it "also includes given raw arguments" do
         expect(Vagrant::Util::Subprocess).to receive(:execute).with { |*args|
           expect(args).to include("--su-user=foot")
@@ -533,7 +532,7 @@ VF
 
       it "shows the ansible-playbook command, with additional quotes when required" do
         expect(machine.env.ui).to receive(:detail).with { |full_command|
-          expect(full_command).to eq("ANSIBLE_FORCE_COLOR=true ANSIBLE_HOST_KEY_CHECKING=true PYTHONUNBUFFERED=1 ANSIBLE_SSH_ARGS='-o IdentityFile=/my/key2 -o ForwardAgent=yes -o ControlMaster=no -o ControlMaster=auto -o ControlPersist=60s' ansible-playbook --private-key=/my/key1 --user=testuser --connection=ssh --why-not --su-user=foot --ask-su-pass --limit='all' --inventory-file=#{generated_inventory_dir} --extra-vars=@#{File.expand_path(__FILE__)} --sudo --sudo-user=deployer -vvv --ask-sudo-pass --ask-vault-pass --vault-password-file=#{File.expand_path(__FILE__)} --tags=db,www --skip-tags=foo,bar --limit='machine*:&vagrant:!that_one' --start-at-task='an awesome task' playbook.yml")
+          expect(full_command).to eq("PYTHONUNBUFFERED=1 ANSIBLE_FORCE_COLOR=true ANSIBLE_HOST_KEY_CHECKING=true ANSIBLE_SSH_ARGS='-o IdentityFile=/my/key2 -o ForwardAgent=yes -o ControlMaster=no -o ControlMaster=auto -o ControlPersist=60s' ansible-playbook --private-key=/my/key1 --user=testuser --connection=ssh --why-not --su-user=foot --ask-su-pass --limit='all' --inventory-file=#{generated_inventory_dir} --extra-vars=@#{File.expand_path(__FILE__)} --sudo --sudo-user=deployer -vvv --vault-password-file=#{File.expand_path(__FILE__)} --tags=db,www --skip-tags=foo,bar --limit='machine*:&vagrant:!that_one' --start-at-task='an awesome task' --ask-sudo-pass --ask-vault-pass playbook.yml")
         }
       end
     end

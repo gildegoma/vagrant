@@ -1776,6 +1776,10 @@ en:
         upload_path_not_set: "`upload_path` must be set for the shell provisioner."
 
       ansible:
+        not_detected: |-
+          The '%{binary}' binary was not found on
+          the VM and is required for ansible provisioning. Please verify that ansible
+          is installed and that this binary is available on the PATH.
         no_playbook: "`playbook` must be set for the Ansible provisioner."
         playbook_path_invalid: "`playbook` for the Ansible provisioner does not exist on the host system: %{path}"
         inventory_path_invalid: "`inventory_path` for the Ansible provisioner does not exist on the host system: %{path}"
