@@ -6,6 +6,8 @@ require "checkpoint"
 require "webmock/rspec"
 require "rspec/its"
 
+require "simplecov" if ENV["COVERAGE"] == "true" || ENV["CI"] == "true"
+
 # Require Vagrant itself so we can reference the proper
 # classes to test.
 require "vagrant"

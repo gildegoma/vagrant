@@ -38,13 +38,14 @@ Gem::Specification.new do |s|
   # tighter restrictions on valid ruby versions
   s.add_dependency "ruby_dep", "<= 1.3.1"
 
-  # Constraint rake to properly handle deprecated method usage
-  # from within rspec
+  s.add_development_dependency "codecov", "~> 0.1.10"
+  s.add_development_dependency "fake_ftp", "~> 0.1.1"
+  # Constraint rake to properly handle deprecated method usage from within rspec
   s.add_development_dependency "rake", "~> 12.0.0"
   s.add_development_dependency "rspec", "~> 3.5.0"
   s.add_development_dependency "rspec-its", "~> 1.2.0"
+  s.add_development_dependency "simplecov", "~> 0.15.0"
   s.add_development_dependency "webmock", "~> 1.20"
-  s.add_development_dependency "fake_ftp", "~> 0.1.1"
 
   # The following block of code determines the files that should be included
   # in the gem. It does this by reading all the files in the directory where
